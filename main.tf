@@ -2,7 +2,9 @@
 variable "namespace" {}
 variable "stage" {}
 variable "name" {}
-
+variable "mininum_protocol_version" {
+  default = "TLSv1"
+}
 
 module "cdn" {
   source = "cloudposse/cloudfront-s3-cdn/aws"
@@ -13,8 +15,8 @@ module "cdn" {
   stage             = var.stage
   name              = var.name
 
-  default_ttl	      = 0
-  minimum_protocol_version	 = "TLSv1.2_2019"
+  default_ttl	             = 0
+  minimum_protocol_version = var.mininum_protocol_version
 }
 
 
