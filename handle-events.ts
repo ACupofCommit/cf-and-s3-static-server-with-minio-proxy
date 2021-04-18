@@ -17,11 +17,12 @@ const minioClient = new Client({
   secretKey: MINIO_SECRET_KEY,
 })
 
-const listener = minioClient.listenBucketNotification(SOURCE_BUCKET_NAME, '', '*', ['s3:ObjectCreated:*','s3:ObjectRemoved:*'])
+const eventsToListen = ['s3:ObjectCreated:*','s3:ObjectRemoved:*']
+const listener = minioClient.listenBucketNotification(SOURCE_BUCKET_NAME, '', '*', eventsToListen)
 listener.on('notification', async function(record) {
   // For example: 's3:ObjectCreated:Put event occurred (2016-08-23T18:26:07.214Z)'
-  console.log('%s event occurred (%s)', record.eventName, record.eventTime)
-  console.log(`Bucket: ${record.s3.bucket.name}, Key: ${record.s3.object.key} (size: ${record.s3.object.size})`)
+  console.log(`${new Date().toISOString()} ${record.eventName} event occurred (${record.eventTime})`)
+  console.log(`${new Date().toISOString()} Bucket: ${record.s3.bucket.name}, Key: ${record.s3.object.key} (size: ${record.s3.object.size})`)
   const s3 = new AWS.S3()
 
   if (/^s3:ObjectCreated:/.test(record.eventName)) {
@@ -44,7 +45,7 @@ listener.on('notification', async function(record) {
     }
     await s3.deleteObject(params).promise()
   }
-  console.log(`Done - Bucket: ${record.s3.bucket.name}, Key: ${record.s3.object.key} (size: ${record.s3.object.size})`)
+  console.log(`${new Date().toISOString()} Done - Bucket: ${record.s3.bucket.name}, Key: ${record.s3.object.key} (size: ${record.s3.object.size})`)
 })
 
-console.log('hello')
+console.log(`${new Date().toISOString()} hello!`)

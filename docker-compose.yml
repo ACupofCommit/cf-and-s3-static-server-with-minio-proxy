@@ -45,4 +45,5 @@ services:
     working_dir: /workspace
     volumes:
       - ./:/workspace
-    command: sh -c "yarn && npx ts-node handle-events.ts"
+      - ./log:/log
+    command: sh -c "yarn && npx ts-node handle-events.ts > /log/handle-events.log"
