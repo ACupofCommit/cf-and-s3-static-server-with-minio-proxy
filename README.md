@@ -12,6 +12,12 @@ to access s3 through this minio server.
 Deploy to AWS Cloudfront and S3.
 
 ```
+# example,
+export TF_VAR_namespace=static-server
+export TF_VAR_stage=dev
+export TF_VAR_name=bucket-987349187
+
+# s3 bucket name is static-server-dev-bucket-987349187-origin
 $ terraform apply
 ```
 
