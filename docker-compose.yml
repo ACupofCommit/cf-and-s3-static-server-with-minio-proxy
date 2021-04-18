@@ -1,0 +1,31 @@
+version: '2'
+
+services:
+  minio:
+    image: minio/minio:RELEASE.2021-04-06T23-11-00Z
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+    environment:
+      MINIO_ACCESS_KEY: $MINIO_ACCESS_KEY
+      MINIO_SECRET_KEY: $MINIO_SECRET_KEY
+    volumes:
+      - ./data:/data
+    command: server /data
+
+  handle-events:
+    image: node:14.16-alpine
+    restart: unless-stopped
+    environment:
+      AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+      AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+      MINIO_ACCESS_KEY: $MINIO_ACCESS_KEY
+      MINIO_SECRET_KEY: $MINIO_SECRET_KEY
+      MINIO_ENDPOINT: minio
+      MINIO_PORT: 9000
+      SOURCE_BUCKET_NAME: $SOURCE_BUCKET_NAME
+      TARGET_BUCKET_NAME: $TARGET_BUCKET_NAME
+    working_dir: /workspace
+    volumes:
+      - ./:/workspace
+    command: sh -c "yarn && npx ts-node handle-events.ts"
