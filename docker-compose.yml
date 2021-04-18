@@ -13,6 +13,16 @@ services:
       - ./data:/data
     command: server /data
 
+  minio-log:
+    image: minio/mc:RELEASE.2021-03-23T05-46-11Z
+    entrypoint: /bin/sh
+    environment:
+      MINIO_ACCESS_KEY: $MINIO_ACCESS_KEY
+      MINIO_SECRET_KEY: $MINIO_SECRET_KEY
+    volumes:
+      - ./log:/log
+    command: -c "mc config host add m1 http://minio:9000 $MINIO_ACCESS_KEY $MINIO_SECRET_KEY && mc admin info m1 && mc admin trace --all m1 > /log/minio-access.log"
+
   handle-events:
     image: node:14.16-alpine
     restart: unless-stopped
