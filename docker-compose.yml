@@ -21,7 +21,15 @@ services:
       MINIO_SECRET_KEY: $MINIO_SECRET_KEY
     volumes:
       - ./log:/log
-    command: -c "mc config host add m1 http://minio:9000 $MINIO_ACCESS_KEY $MINIO_SECRET_KEY && mc admin info m1 && mc admin trace --all m1 > /log/minio-access.log"
+    command:
+      - -c
+      - |
+        curl https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh > wait-for-it.sh
+        chmod +x wait-for-it.sh
+        ./wait-for-it.sh minio:9000 -t 10
+        mc config host add m1 http://minio:9000 $MINIO_ACCESS_KEY $MINIO_SECRET_KEY
+        mc admin info m1
+        mc admin trace --all m1 > /log/minio-access.log
 
   handle-events:
     image: node:14.16-alpine
